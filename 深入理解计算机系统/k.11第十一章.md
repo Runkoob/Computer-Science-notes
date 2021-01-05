@@ -48,31 +48,29 @@ rio_readinitb函数：将描述符fd和地址rp处的一个类型为rio_t的读�
 
 ![image-20201205145031581](.images/image-20201205145031581.png)
 
-![image-20201205153314433](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201205153314433.png
-
-![image-20201205153337095](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201205153337095.png)
-
-![image-20201205153605024](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201205153605024.png)
 
 
+![image-20201205153337095](.images/image-20201205153337095.png)
 
-![image-20201205170854625](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201205170854625.png)
+![image-20201205153605024](.images/image-20201205153605024.png)
 
 
 
+![image-20201205170854625](.images/image-20201205170854625.png)
 
 
-![image-20201207231840193](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201207231840193.png)
 
-![image-20201207232429414](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201207232429414.png)
 
-![image-20201207232553627](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201207232553627.png)
 
-http://www.cppblog.com/lf426/archive/2008/07/10/55800.html
+![image-20201207231840193](.images/image-20201207231840193.png)
+
+![image-20201207232429414](.images/image-20201207232429414.png)
+
+![image-20201207232553627](.images/image-20201207232553627.png)
 
 socket 函数：创建套接字描述符
 
-![image-20201207232742324](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201207232742324.png)
+![image-20201207232742324](.images/image-20201207232742324.png)
 
 ![image-20201207233012712](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201207233012712.png)
 
@@ -80,7 +78,7 @@ connect函数：客户端调用connect函数来建立服务器的连接。
 
 
 
-![image-20201207234335606](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201207234335606.png)
+![image-20201207234335606](.images/image-20201207234335606.png)
 
 ![image-20201207234326900](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201207234326900.png)
 
@@ -88,7 +86,7 @@ connect函数：客户端调用connect函数来建立服务器的连接。
 
 bind： 服务器用来与客户端建立连接
 
-![image-20201208084353353](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208084353353.png)
+![image-20201208084353353](.images/image-20201208084353353.png)
 
 bind函数告诉内核将addr中的服务器套接字地址和套接字描述符sockfd联系起来。
 
@@ -96,7 +94,7 @@ bind函数告诉内核将addr中的服务器套接字地址和套接字描述符
 
 listen函数：服务器用listen函数高速内核，描述符是被服务器而不是客户端使用的。
 
-![image-20201208084915289](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208084915289.png)
+![image-20201208084915289](.images/image-20201208084915289.png)
 
 将sockfd从一个主动套接字转化为一个监听套接字，该套接字可以接受来自客户端的连接请求。
 
@@ -106,7 +104,7 @@ backlog参数暗示在内核开始拒绝连接请求之前，队列中要排队�
 
 accept函数：服务器调用它来等待来自客户端的连接请求。
 
-![image-20201208085309477](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208085309477.png)
+![image-20201208085309477](.images/image-20201208085309477.png)
 
 listened：客户端的请求到达侦听描述符
 
@@ -118,15 +116,15 @@ addr：填空客户端的套接字地址，返回一个已连接描述符。这�
 
 getaddrinfo函数：将主机名或主机地址、服务名或端口号的字符串转化为套接字地址结构。
 
-![image-20201208090025656](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208090025656.png)
+![image-20201208090025656](.images/image-20201208090025656.png)
 
-![image-20201208090108516](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208090108516.png)
+![image-20201208090108516](.images/image-20201208090108516.png)
 
 host参数：域名或数字地址（点进制十分制IP地址）
 
 service： 服务名或端口号
 
-![image-20201208090722349](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208090722349.png)
+![image-20201208090722349](.images/image-20201208090722349.png)
 
 getnameinfo函数：将套接字地址结构转换为相应的主机和服务名字符串
 
@@ -136,7 +134,7 @@ getnameinfo函数：将套接字地址结构转换为相应的主机和服务名
 
 open_clientfd函数：客户端调用它来建立与服务器的连接
 
-![image-20201208091637015](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208091637015.png)
+![image-20201208091637015](.images/image-20201208091637015.png)
 
 open_listenfd函数：服务器创建一个监听描述符，准备好接收连接请求
 
@@ -144,11 +142,11 @@ open_listenfd函数：服务器创建一个监听描述符，准备好接收连�
 
 HTTP请求：
 
-![image-20201208093936217](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208093936217.png)
+![image-20201208093936217](.images/image-20201208093936217.png)
 
 
 
-![image-20201208094436304](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208094436304.png)
+![image-20201208094436304](.images/image-20201208094436304.png)
 
 ![image-20201208094456400](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208094456400.png)
 

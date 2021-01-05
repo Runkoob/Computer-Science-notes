@@ -290,7 +290,7 @@ Intel处理器在工业界称为 **超标量**， 意思是它可以在每个时
 
 ![image-20201212162211487](.images/image-20201212162211487.png)
 
-![image-20201212162223272](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201212162223272.png)
+![image-20201212162223272](.images/image-20201212162223272.png)
 
 
 

@@ -272,7 +272,7 @@ $$
 
 **补码加法的溢出**：由公式定义有
 
-![image-20201209094308776](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201209094308776.png)
+![image-20201209094308776](.images/image-20201209094308776.png)
 
 
 
@@ -328,7 +328,7 @@ $$
 
 ![image-20201209192047281](.images/image-20201209192047281.png)
 
-![image-20201209192918920](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201209192918920.png)
+![image-20201209192918920](.images/image-20201209192918920.png)
 
 ![image-20201209192127499](.images/image-20201209192145545.png)
 
