@@ -72,7 +72,7 @@ socket 函数：创建套接字描述符
 
 ![image-20201207232742324](.images/image-20201207232742324.png)
 
-![image-20201207233012712](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201207233012712.png)
+![image-20201207233012712](.images/image-20201207233012712.png)
 
 connect函数：客户端调用connect函数来建立服务器的连接。
 
@@ -80,7 +80,7 @@ connect函数：客户端调用connect函数来建立服务器的连接。
 
 ![image-20201207234335606](.images/image-20201207234335606.png)
 
-![image-20201207234326900](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201207234326900.png)
+![image-20201207234326900](.images/image-20201207234326900.png)
 
 
 
@@ -148,6 +148,6 @@ HTTP请求：
 
 ![image-20201208094436304](.images/image-20201208094436304.png)
 
-![image-20201208094456400](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201208094456400.png)
+![image-20201208094456400](.images/image-20201208094456400.png)
 
 服务器接收如上请求时，调用fork来创建一个子进程，并调用execve在子进程中的上下文中执行/cgi-bin/adder程序。
