@@ -89,7 +89,8 @@ CPU从一个有$ N = 2^n$个地址的地址空间中生成虚拟地址， 该地
 1. **未分配的**: 虚拟内存系统还未分配的页。未分配的块没有任何数据和它们相关联，因此不占用任何磁盘空间
 2. **缓存的**： 当前已缓存在物理内存中的已分配页
 3. **未缓存的**：未缓存在物理内存中的已分配页
-4. ![image-20201215140620544](.images/image-20201215140620544.png)
+
+   ![image-20201215140620544](.images/image-20201215140620544.png)
 
 
 
@@ -201,9 +202,9 @@ CPU硬件执行的步骤：
 
 **页面缺页**：
 
-![image-20201215163504716](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201215163504716.png)
+![image-20201215163504716](.images/image-20201215163504716.png)
 
-![image-20201215163512447](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201215163512447.png)
+![image-20201215163512447](.images/image-20201215163512447.png)
 
 
 
