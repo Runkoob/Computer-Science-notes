@@ -177,7 +177,7 @@ $$
 
 
 
-![image-20201214224928910](C:\Users\maoch\AppData\Roaming\Typora\typora-user-images\image-20201214224928910.png)
+![image-20201214224928910](.images/image-20201214224928910.png)
 
 ![image-20201214224940288](.images/image-20201214224940288.png)
 
