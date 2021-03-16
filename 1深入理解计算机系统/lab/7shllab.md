@@ -201,7 +201,8 @@ void eval(char *cmdline)
 		sigemptyset(&mask_one);// 初始化信号集合为空集合
 		sigaddset(&mask_one, SIGCHLD);//把SIGCHID信号添加到信号集中
 
-		sigprocmask(SIG_BLOCK, &mask_one, &prev_one);//把SIGCHID信号添加到block中，即阻塞SIGCHID信号，来实现父子进程的同步，即保证子进程结束时，在jobs列表中删除job在后，父进程在jobs添加job在前
+		sigprocmask(SIG_BLOCK, &mask_one, &prev_one);//把SIGCHID信号添加到block中，即阻塞SIGCHID信号，来实现父子进程的同步，
+                                                     //即保证子进程结束时，在jobs列表中删除job在后，父进程在jobs添加job在前
 		if ((pid = fork()) == 0){
 			setpgid(0, 0); //将每个子进程放入一个新的进程组，避免子进程与shell主进程在同一个进程组，使得信号发生时出现问题
 			sigprocmask(SIG_SETMASK, &prev_one, NULL);//在子进程中将SIGCHID信号解除阻塞，使得子进程在结束时，可以发送SIGCHID信号给父进程
