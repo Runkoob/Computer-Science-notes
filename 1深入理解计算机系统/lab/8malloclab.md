@@ -23,7 +23,7 @@ extern void *mm_realloc(void *ptr, size_t size);
 
 1. 宏定义：具体解释可参考书上P599
 
-```
+```C
 #define ALIGNMENT 8
 #define ALIGN(size) (((size) + (ALIGNMENT-1)) & ~0x7)
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
@@ -527,7 +527,7 @@ void *AddressOrder(void *ptr, void *head)
 
 3. mm_malloc函数：同上
 
-```
+```C
 /* 
  * mm_malloc - Allocate a block by incrementing the brk pointer.
  *     Always allocate a block whose size is a multiple of the alignment.
