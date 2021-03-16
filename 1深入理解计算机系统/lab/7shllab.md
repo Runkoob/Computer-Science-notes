@@ -13,7 +13,9 @@ void sigtstp_handler(int sig);//SIGSTP信号处理程序
 void sigint_handler(int sig);//SIGINT信号处理程序
 ```
 
+## 函数之间的逻辑
 
+![image-20210316233312411](.images/image-20210316233312411.png)
 
 ## 函数声明
 
@@ -109,6 +111,8 @@ handler_t *Signal(int signum, handler_t *handler);
 
 
 ## main 函数
+
+
 
 ```C
 /*
