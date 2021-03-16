@@ -13,9 +13,9 @@ void sigtstp_handler(int sig);//SIGSTP信号处理程序
 void sigint_handler(int sig);//SIGINT信号处理程序
 ```
 
+## main 函数
 
-
-```c
+```C
 /* 
  * tsh - A tiny shell program with job control
  * 
@@ -170,7 +170,12 @@ int main(int argc, char **argv)
 
     exit(0); /* control never reaches here */
 }
-  
+```
+
+## eval函数
+
+```c
+
 /* 
  * eval - Evaluate the command line that the user has just typed in
  * 
@@ -227,6 +232,14 @@ void eval(char *cmdline)
 	}
     return;
 }
+```
+
+
+
+## parseline函数
+
+```c
+
 
 /* 
  * parseline - Parse the command line and build the argv array.
@@ -284,7 +297,11 @@ int parseline(const char *cmdline, char **argv)
     }
     return bg;
 }
+```
 
+## builtin_cmd函数
+
+```c
 /* 
  * builtin_cmd - If the user has typed a built-in command then execute
  *    it immediately.  
@@ -312,6 +329,11 @@ int builtin_cmd(char **argv)
 
     return 0;     /* not a builtin command */
 }
+```
+
+## do_bgfg函数
+
+```c
 
 /* 
  * do_bgfg - Execute the builtin bg and fg commands
@@ -366,6 +388,11 @@ void do_bgfg(char **argv)
     return;
 }
 
+```
+
+## waitfg函数
+
+```c
 /* 
  * waitfg - Block until process pid is no longer the foreground process
  */
@@ -376,7 +403,11 @@ void waitfg(pid_t pid)
 	};
     return;
 }
+```
 
+## signal handlers函数
+
+```c
 /*****************
  * Signal handlers
  *****************/
@@ -462,6 +493,14 @@ void sigtstp_handler(int sig)
 /*********************
  * End signal handlers
  *********************/
+```
+
+
+
+## helper函数
+
+```c
+
 
 /***********************************************
  * Helper routines that manipulate the job list
