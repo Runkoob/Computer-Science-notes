@@ -13,9 +13,11 @@ void sigtstp_handler(int sig);//SIGSTP信号处理程序
 void sigint_handler(int sig);//SIGINT信号处理程序
 ```
 
-## main 函数
 
-```C
+
+## 函数声明
+
+```c
 /* 
  * tsh - A tiny shell program with job control
  * 
@@ -102,7 +104,13 @@ void unix_error(char *msg);
 void app_error(char *msg);
 typedef void handler_t(int);
 handler_t *Signal(int signum, handler_t *handler);
+```
 
+
+
+## main 函数
+
+```C
 /*
  * main - The shell's main routine 
  */
@@ -172,7 +180,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## eval函数
+## eval函数 执行非内置命令
 
 ```c
 
@@ -299,7 +307,7 @@ int parseline(const char *cmdline, char **argv)
 }
 ```
 
-## builtin_cmd函数
+## builtin_cmd函数 执行内置命令
 
 ```c
 /* 
@@ -331,7 +339,7 @@ int builtin_cmd(char **argv)
 }
 ```
 
-## do_bgfg函数
+## do_bgfg函数 处理bg和fg命令
 
 ```c
 
@@ -390,7 +398,7 @@ void do_bgfg(char **argv)
 
 ```
 
-## waitfg函数
+## waitfg函数 等待前台进程结束
 
 ```c
 /* 
