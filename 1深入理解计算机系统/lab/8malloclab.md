@@ -53,7 +53,7 @@ extern void *mm_realloc(void *ptr, size_t size);
 
 ![image-20210209230018055](.images/image-20210209230018055.png)
 
-```
+```C
 void *heap_listp;
 ;
 /* 
