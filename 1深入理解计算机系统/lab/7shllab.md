@@ -17,6 +17,21 @@ void sigint_handler(int sig);//SIGINT信号处理程序
 
 ![image-20210316233312411](.images/image-20210316233312411.png)
 
+1. eval函数：执行shell中的非内置命令
+2. parseline函数：解析输入的命令行，并判断其是否是后台命令，若是后台命令，则返回1，若不是，则返回0（一个时刻只能有一个前台命令在执行，因此若是前台命令，则必须要等待当前的前台任务执行结束）
+3. builtin_cmd函数：判断命令是否是内置命令，若是内置命令，则执行内置命令函数，若是非内置命令，则需要fork+execve函数来执行。若是内置命令，则返回1，若是非内置命令，则返回0。
+4. listjobs函数：处理内置命令jobs，列出当前所有任务，包括前台任务，后台任务，暂停任务
+5. exit函数：处理内置命令quits，退出当前程序
+6. do_bgfg函数：处理内置命令bg和fg，首先判断是通过调用jib号还是pid号来操作作业（bg %jib，或 bg pid）。fg命令将该作业的状态变为前台作业，bg命令将该作业的状态变为后台作业。在操作全局数据时，通过sigprocmask函数来屏蔽所有信号，修改完全局数据后，通过sigprocmask函数来解除屏蔽。并且通过kill函数，来发送SIGCONT信号来给该作业的所有进程，使得后台进程变为前台进程。若命令是fg，还需要调用waitfg函数来等待前台作业结束。
+7. waitfg函数：采用sleep函数来等待前台作业结束
+8. 4-7都是处理内置命令，当为非内置命令时，则shell按照可执行程序来处理它，利用fork新建子进程，并且利用execve函数来替换子进程中的参数为输入的可执行程序的参数。这里涉及到父子进程的同步，当没有把新任务添加到全局jobs列表中时，必须要阻塞SIGCHID信号，因为若不阻塞，则可能子进程结束时，需要从jobs任务列表中删除任务时，此时任务尚未添加到jobs列表中，具体细节见代码。
+9. sigchld_handler函数：SIGCHID信号的处理程序，采用waitpid函数来获取子进程结束时的状态：
+   1. 当子进程是调用exit或者return返回时，此时子进程正常终止，调用deletejob函数来删除任务列表中的任务
+   2. 当子进程收到终止信号而终止时, 返回导致子进程终止的信号编号，并调用deletejob函数
+   3. 当子进程收到停止信号而停止时，将该进程对应的任务状态改为停止状态，并返回子进程停止的信号编号
+10. sigint_handler函数：SIGINT信号（程序终止信号：ctrl+c）的处理程序，通过调用fgpid来获取前台任务的进程号，然后通过kill函数发送终止信号给该进程组。
+11. sigtstp_handler函数：SIGTSTP 信号（程序停止信号：ctrl+z）的处理程序，通过调用fgpid来获取前台任务的进程号，然后通过kill函数发送停止信号给该进程组。
+
 ## 函数声明
 
 ```c
@@ -441,14 +456,16 @@ void sigchld_handler(int sig)
 	int state;
 
 	sigfillset(&mask_all);
-	while ((pid = waitpid(-1, &state, WNOHANG | WUNTRACED)) > 0){//等待子进程结束，-1表示等待的集合是由父进程所有的子进程组成的，WNOHANG表示当等待的子进程没有任何一个终止时，则立即返回0，UNTRACED表示挂起调用进程的进行，知道等待集合中的一个进程终止或停止，返回该进程的pid号
+	while ((pid = waitpid(-1, &state, WNOHANG | WUNTRACED)) > 0){//等待子进程结束，-1表示等待的集合是由父进程所有的子进程组成的，
+                                                   //WNOHANG表示当等待的子进程没有任何一个终止时，则立即返回0，
+                                                  //UNTRACED表示挂起调用进程的进行，知道等待集合中的一个进程终止或停止，返回该进程的pid号
 
 		sigprocmask(SIG_BLOCK, &mask_all, &prev_all);//屏蔽所有信号，准备操作全局变量jobs
         /*判断子进程结束的不同方式*/
 		if(WIFEXITED(state)){//子进程通过调用exit或者return返回，此时子进程正常终止
 			deletejob(jobs, pid);		
-		}else if(WIFSIGNALED(state)){//子进程收到终止信号而结束
-			printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, WTERMSIG(state));//WTERMSIG返回导致子进程终止的信号编号
+		}else if(WIFSIGNALED(state)){//子进程收到终止信号而结束, WTERMSIG返回导致子进程终止的信号编号
+			printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, WTERMSIG(state));
 			deletejob(jobs, pid);
 		}else if(WIFSTOPPED(state)){//子进程收到停止信号而停止
 			job = getjobpid(jobs, pid);
