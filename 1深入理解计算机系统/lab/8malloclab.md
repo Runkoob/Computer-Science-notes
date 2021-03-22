@@ -1,6 +1,14 @@
 # Malloc Lab: Writing a Dynamic Storage Allocator
 
-该lab是实现一个动态内存分配器。主要实现以下四个函数
+该lab是实现一个动态内存分配器。分配器的要求：
+
+1. 立即响应请求：分配器必须立即响应请求，不允许分配器为了提高性能重新排列或者缓冲请求
+2. 处理任意请求序列：应用可以任意的分配请求和释放请求，只需要满足释放的请求必须对应与当前已分配的一个块
+3. 只使用堆：分配器使用的任何数据结构都必须保存在堆里
+4. 对齐块：分配器必须对齐块，使得它们可以保存任何类型的数据对象
+5. 不修改已分配的块：分配器只能操作或者改变空闲块，一旦块被分配了，就不允许修改或者移动
+
+主要实现以下四个函数
 
 ```c
 extern int mm_init (void);
@@ -238,7 +246,7 @@ void mm_free(void *ptr)
 }
 ```
 
-4.  mm_realloc函数：重新分配内存函数，当重新分配内存的大小比原有的大小更大时，先判断在旧内存块的相邻的下一个块是否是空闲块，并且尺寸满足需求。 若满足需求，直接将旧内存块和该空闲块分配给用户，若不符合需求，则重新分配整个所需尺寸大小的内存块，并将原来的数据复制到新内存块中。其他情况比较简单，见代码即可。
+4.  mm_realloc函数：重新分配内存函数，当重新分配内存的大小比原有的大小更大时，先判断在旧内存块的相邻的下一个块是否是空闲块，并且判断尺寸是否满足需求。 若满足需求，直接将旧内存块和该空闲块分配给用户，若不符合需求，则重新分配整个所需尺寸大小的内存块，并将原来的数据复制到新内存块中。其他情况比较简单，见代码即可。
 
 ```c
 void *mm_realloc(void *ptr, size_t size)
@@ -273,7 +281,7 @@ void *mm_realloc(void *ptr, size_t size)
         size_t all_size = oldSize + GET_SIZE(HDRP(NEXT_BLKP(oldptr)));
         if(!next_alloc && (all_size >= newsize)){
             if (all_size - newsize >= 2 * DSIZE){
-                    PUT(HDRP(oldptr), PACK(newsize, 1));
+                PUT(HDRP(oldptr), PACK(newsize, 1));
                 PUT(FTRP(oldptr), PACK(newsize, 1));
                 PUT(HDRP(NEXT_BLKP(oldptr)), PACK(all_size - newsize, 0));
                 PUT(FTRP(NEXT_BLKP(oldptr)), PACK(all_size - newsize, 0));
@@ -294,6 +302,8 @@ void *mm_realloc(void *ptr, size_t size)
 
 方案2：采用分离适配法实现内存分配器，基于  **显示双向空闲列表** 数据结构的分配器。（注意：后继和祖先存放的位置对调）
 
+**分离适配法**：分配器维护着一个空闲链表的数组，每个空闲链表是和一个大小类相关联的，并且被组织成某种类型的显示或隐式链表，每个链表包含潜在的大小不同的块。C标准库中的GNU malloc包就是采用该方法。分离适配法搜索时间更快，显示链表的缺点在于空闲块必须足够大，来包含所有需要的指针，以及头部和脚部指针，这就导致了更大的最小块大小，也潜在的提高了内部碎片的程度。
+
 ![image-20210209232228180](.images/image-20210209232228180.png)
 
 分为9个大小类，分别为：
@@ -307,6 +317,23 @@ $$
 ![image-20210209233514926](.images/image-20210209233514926.png)
 
 从堆起始位置开始是9个大小类的起始位置，每个大小类与后续的相对应大小的空闲块构成一个链表，形成逻辑上的相互连接关系。
+
+整个代码结构：
+
+![image-20210322193607286](.images/image-20210322193607286.png)
+
+1. mm_init函数：初始化分配器
+2. extend_heap函数：当堆内存不够时，申请新的堆内存（移动sbrk指针）
+3. coalesce函数：合并相邻的空闲块，若能合并时，需要在空闲链表的大小类中删除被合并的空闲块（即删除双向链表的特定节点）
+4. add_block函数：将空闲块添加到大小类中，首先调用Group_num函数来根据空闲块的大小来确定空闲块在哪个大小类中，然后采用LIFO函数或AddressOrder函数来插入空闲块。
+   1. LIFO函数：采用后进先出的顺序维护链表，将空闲块的位置放置在链表的开始处。
+   2. AddressOrder函数：按照地址顺序来维护链表，其中链表中每个块的地址都小于它后继的地址。在这种情况下，需要线性的时间搜索来定位空闲块所需要插入的位置。这种方法的首次适配策略比LIFO方法的首次适配策略有更高的内存利用率。
+5. mm_malloc函数：分配器为应用分配所请求指定大小的内存块，可以根据采用first_fit和best_fit方法来根据所需的内存块大小来从大小类中找到满足要求的空闲块。
+   1. first_fit函数：首次适配法, 先根据空闲块的尺寸找到对应的大小类，并从此大小类开始，遍历大小类的空闲块，直到找到满足要求的空闲块，若没有，则返回NULL（需要扩展堆）
+   2. best_fit函数：最佳适配法，根据空闲块的尺寸找到对应的大小类，并从此大小类开始，遍历大小类的空闲块，找到满足所需要求的最小尺寸的空闲块。若没有，则返回NULL（需要扩展堆）
+   3. extend_heap函数：若空闲块中此时没有符合要求的指定大小的块，则需要扩展堆
+6. place函数：找到符合要求的空闲块，进行分配给用户，并且需要在空闲链表中删除，而且若空闲块还进行了分割，则分割后多余的空闲块也需要添加到空闲链表中
+7. mm_free函数：释放的空闲块，并且通过coalesce函数立即合并空闲块，然后添加到空闲块链表中。
 
 整个实现代码如下：
 
@@ -333,13 +360,13 @@ $$
 #define HDRP(bp) ((char *)(bp) - WSIZE)
 #define FTRP(bp) ((char *)(bp) + GET_SIZE(HDRP(bp)) - DSIZE)
 
-#define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(HDRP(bp)))
-#define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE(HDRP(bp) - WSIZE))
+#define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(HDRP(bp))) // 物理相邻的下一个块
+#define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE(HDRP(bp) - WSIZE)) // 物理相邻的上一个块
 
 #define PRED(bp) ((char*)(bp) + WSIZE)
 #define SUCC(bp) ((char*)(bp))
-#define PRED_BLKP(bp) (GET(PRED(bp)))
-#define SUCC_BLKP(bp) (GET(SUCC(bp)))
+#define PRED_BLKP(bp) (GET(PRED(bp)))// 逻辑相邻的上一个块
+#define SUCC_BLKP(bp) (GET(SUCC(bp)))// 逻辑相邻的下一个块
 ```
 
 2. mm_init函数：基本同上，区别在于9个大小类的起始位置初始化为NULL指针。
@@ -376,7 +403,7 @@ int mm_init(void)
 
 ```
 
-extend_heap函数：在从扩展堆内存时，调整结束块的位置，初始化空闲块的后继指针和祖先指针为NULL，并且合并空闲的内存块，该空闲内存块在需要添加到对应的大小类中（add_block函数)，构成逻辑上的连接。
+extend_heap函数：在扩展堆内存时，调整结束块的位置，初始化空闲块的后继指针和祖先指针为NULL，并且合并空闲的内存块，该空闲内存块在需要添加到对应的大小类中（add_block函数)，构成逻辑上的连接。
 
 ```c
 void *extend_heap(size_t words){
@@ -440,7 +467,8 @@ delete_block函数：在大小类中删除对应的空闲块。实际上就是�
 void delete_block(void *ptr)
 {
 	PUT(SUCC(PRED_BLKP(ptr)), SUCC_BLKP(ptr));
-	if(SUCC_BLKP(ptr) != NULL){ //这就是为什么后继指针和祖先指针需要对调的位置，因为在初始化时，只有一个字节大小，因此要存放后继指针，这样代码的形式就更加统一，在初始化时，该后继指针就为NULL指针。
+	if(SUCC_BLKP(ptr) != NULL){ //这就是为什么后继指针和祖先指针需要对调的位置，因为在初始化时，只有一个字节大小，
+                                //因此要存放后继指针，这样代码的形式就更加统一，在初始化时，该后继指针就为NULL指针。
 		PUT(PRED(SUCC_BLKP(ptr)), PRED_BLKP(ptr));	
 	}
 }
@@ -678,14 +706,14 @@ void *mm_realloc(void *ptr, size_t size)
     if(asize == newsize){
 		return newptr;
     }else if (asize < newsize){
-	if (newsize - asize >= 2 * DSIZE){
-		PUT(HDRP(newptr), PACK(asize, 1));
-		PUT(FTRP(newptr), PACK(asize, 1));
-		PUT(HDRP(NEXT_BLKP(newptr)), PACK(newsize - asize, 0));
-		PUT(FTRP(NEXT_BLKP(newptr)), PACK(newsize - asize, 0));
-		add_block(NEXT_BLKP(newptr));
-	}
-	return newptr;
+        if (newsize - asize >= 2 * DSIZE){
+            PUT(HDRP(newptr), PACK(asize, 1));
+            PUT(FTRP(newptr), PACK(asize, 1));
+            PUT(HDRP(NEXT_BLKP(newptr)), PACK(newsize - asize, 0));
+            PUT(FTRP(NEXT_BLKP(newptr)), PACK(newsize - asize, 0));
+            add_block(NEXT_BLKP(newptr));
+        }
+		return newptr;
     }else{
 	    if((ptr = mm_malloc(asize)) == NULL)
 	    	return NULL;
